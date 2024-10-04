@@ -1,0 +1,72 @@
+﻿import os
+import scripts.app_helper as app
+import platform
+
+PLATFORM = platform.system()
+
+CUSTOM_WIDGET_LIBS = []
+
+DEPENDS_LIBS = CUSTOM_WIDGET_LIBS + []
+
+SOURCE_3RD_DEPS_PATH = os.path.normpath(os.path.join(os.getcwd(), '3rd'))
+
+if PLATFORM == 'Linux':
+    SOURCE_3RD_DEPS_PATH = os.path.join(SOURCE_3RD_DEPS_PATH, 'ubuntu')
+elif PLATFORM == 'Windows':
+    SOURCE_3RD_DEPS_PATH = os.path.join(SOURCE_3RD_DEPS_PATH, 'win_msvc')
+
+if PLATFORM == 'Linux':
+    DEPENDS_LIBS += [
+        {
+            'root' : os.path.join(SOURCE_3RD_DEPS_PATH, 'zlib'),
+            'shared_libs' : ['z']
+        },
+        {
+            'root': os.path.join(SOURCE_3RD_DEPS_PATH, 'openssl'),
+            'shared_libs': ['crypto', 'ssl']
+        },
+        {
+            'root' : os.path.join(SOURCE_3RD_DEPS_PATH, 'poco'),
+            'shared_libs' : ['PocoFoundation', 'PocoUtil', 'PocoXML', 'PocoJSON', 'PocoCrypto', 'PocoNet', 'PocoNetSSL']
+        }
+    ]
+elif PLATFORM == 'Windows':
+    DEPENDS_LIBS += [
+        {
+            'root': os.path.join(SOURCE_3RD_DEPS_PATH, 'openssl'),
+            'shared_libs': ['libcrypto-3-x64', 'libssl-3-x64']
+        },
+        {
+            'root' : os.path.join(SOURCE_3RD_DEPS_PATH, 'poco/debug'),
+            'shared_libs' : ['PocoFoundationd', 'PocoUtild', 'PocoXMLd', 'PocoJSONd', 'PocoCryptod', 'PocoNetd', 'PocoNetSSLd']
+        },
+        {
+            'root' : os.path.join(SOURCE_3RD_DEPS_PATH, 'pcre2/debug'),
+            'shared_libs' : ['pcre2-8d']
+        },
+        {
+            'root' : os.path.join(SOURCE_3RD_DEPS_PATH, 'zlib/debug'),
+            'shared_libs' : ['zlibd1']
+        },
+        {
+            'root' : os.path.join(SOURCE_3RD_DEPS_PATH, 'expat/debug'),
+            'shared_libs' : ['libexpatd']
+        }
+    ]
+
+APP_CPPPATH = [
+    os.path.join(SOURCE_3RD_DEPS_PATH, 'openssl/include'),
+    os.path.join(SOURCE_3RD_DEPS_PATH, 'poco/include')
+]
+
+
+helper = app.Helper(ARGUMENTS)
+helper.set_deps(DEPENDS_LIBS).add_cpppath(APP_CPPPATH)
+
+
+
+app.prepare_depends_libs(ARGUMENTS, helper, DEPENDS_LIBS)
+helper.call(DefaultEnvironment)
+
+SConscriptFiles = ['src/SConscript', 'tests/SConscript']
+helper.SConscript(SConscriptFiles)

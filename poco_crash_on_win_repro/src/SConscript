@@ -1,0 +1,19 @@
+﻿'''
+Author: onwa_zdl 584301661@qq.com
+Date: 2024-10-04 10:33:23
+LastEditors: onwa_zdl 584301661@qq.com
+LastEditTime: 2024-10-04 10:56:29
+FilePath: \poco_crash_on_win_repro\src\SConscript
+Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
+'''
+import os
+import sys
+import platform
+
+env = DefaultEnvironment().Clone()
+BIN_DIR = os.environ['BIN_DIR']
+LIB_DIR = os.environ['LIB_DIR'];
+
+sources = Glob('**/*.c') + Glob('*.c') + Glob('**/*.cpp') + Glob('*.cpp')
+
+env.Program(os.path.join(BIN_DIR, 'demo'), sources, LIBS = env['LIBS'])
